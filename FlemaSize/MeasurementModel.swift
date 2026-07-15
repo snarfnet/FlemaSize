@@ -55,14 +55,40 @@ final class MeasurementModel: ObservableObject {
 
     func reset(canvas: CGSize) {
         canvasSize = canvas
-        coinCenter = CGPoint(x: canvas.width * 0.30, y: canvas.height * 0.70)
-        coinRadius = min(canvas.width, canvas.height) * 0.10
+
         let w = canvas.width * 0.42
         let h = canvas.height * 0.42
         itemRect = CGRect(x: canvas.width * 0.5 - w * 0.5,
                           y: canvas.height * 0.32 - h * 0.2,
                           width: w, height: h)
+
+        // 硬貨を自動検出して円を合わせる。見つからなければデフォルト位置。
+        if let img = image, let norm = CoinDetector.detect(in: img) {
+            let disp = displayedImageRect(canvas: canvas, imageSize: img.size)
+            coinCenter = CGPoint(x: disp.minX + norm.midX * disp.width,
+                                 y: disp.minY + norm.midY * disp.height)
+            coinRadius = max(norm.width * disp.width, norm.height * disp.height) / 2
+        } else {
+            coinCenter = CGPoint(x: canvas.width * 0.30, y: canvas.height * 0.70)
+            coinRadius = min(canvas.width, canvas.height) * 0.10
+        }
         placed = true
+    }
+
+    /// scaledToFit で表示される画像の実矩形（レターボックス考慮）
+    private func displayedImageRect(canvas: CGSize, imageSize: CGSize) -> CGRect {
+        guard imageSize.width > 0, imageSize.height > 0 else {
+            return CGRect(origin: .zero, size: canvas)
+        }
+        let imageAspect = imageSize.width / imageSize.height
+        let canvasAspect = canvas.width / canvas.height
+        if imageAspect > canvasAspect {
+            let dh = canvas.width / imageAspect
+            return CGRect(x: 0, y: (canvas.height - dh) / 2, width: canvas.width, height: dh)
+        } else {
+            let dw = canvas.height * imageAspect
+            return CGRect(x: (canvas.width - dw) / 2, y: 0, width: dw, height: canvas.height)
+        }
     }
 }
 
