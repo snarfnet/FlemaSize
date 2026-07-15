@@ -95,6 +95,27 @@ struct ContentView: View {
 
     private var resultPanel: some View {
         VStack(spacing: 14) {
+            HStack(spacing: 8) {
+                Image(systemName: "hand.draw.fill")
+                    .font(.system(size: 13, weight: .black))
+                    .foregroundStyle(Theme.accent)
+                Text("円を")
+                    .foregroundStyle(Theme.sub)
+                Text("硬貨")
+                    .foregroundStyle(Theme.coin)
+                Text("に、枠を")
+                    .foregroundStyle(Theme.sub)
+                Text("商品")
+                    .foregroundStyle(Theme.item)
+                Text("に合わせてね")
+                    .foregroundStyle(Theme.sub)
+            }
+            .font(.system(size: 13, weight: .black, design: .rounded))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 9)
+            .background(Theme.card)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
             coinPicker
 
             HStack(spacing: 12) {
