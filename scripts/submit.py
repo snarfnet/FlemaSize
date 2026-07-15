@@ -2,8 +2,7 @@ import jwt, time, requests, sys
 
 KEY_ID = 'WDXGY9WX55'
 ISSUER = '2be0734f-943a-4d61-9dc9-5d9045c46fec'
-# TODO: ASCアプリレコード作成後に実IDを設定する
-APP_ID = 'REPLACE_WITH_APP_ID'
+APP_ID = '6791104564'
 BUILD_NUMBER = sys.argv[1]
 VERSION = sys.argv[2] if len(sys.argv) > 2 else '1.0'
 
@@ -39,6 +38,10 @@ if not build_id:
 
 api('PATCH', f'/builds/{build_id}',
     json={'data': {'type': 'builds', 'id': build_id, 'attributes': {'usesNonExemptEncryption': False}}})
+
+# TestFlight段階：レビュー提出はまだ行わない
+print('Build uploaded and encryption declared. Available for TestFlight.')
+sys.exit(0)
 
 r = api('GET', f'/apps/{APP_ID}/appStoreVersions?filter[platform]=IOS&limit=1')
 version_id = None
