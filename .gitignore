@@ -1,0 +1,8 @@
+build/
+DerivedData/
+*.xcodeproj
+*.xcworkspace
+.DS_Store
+tmp/
+.omc/
+_imagen_prompt.txt
