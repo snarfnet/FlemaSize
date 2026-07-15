@@ -5,7 +5,6 @@ struct MeasureView: View {
 
     // ジェスチャ開始時のスナップショット
     @State private var coinCenterStart: CGPoint?
-    @State private var coinRadiusStart: CGFloat?
     @State private var itemRectStart: CGRect?
 
     var body: some View {
@@ -25,6 +24,7 @@ struct MeasureView: View {
                 }
             }
             .frame(width: canvas.width, height: canvas.height)
+            .coordinateSpace(name: "canvas")
             .clipped()
             .onAppear {
                 if !model.placed { model.reset(canvas: canvas) }
@@ -64,14 +64,12 @@ struct MeasureView: View {
             handle(color: Theme.coin)
                 .position(x: model.coinCenter.x + model.coinRadius, y: model.coinCenter.y)
                 .gesture(
-                    DragGesture()
+                    DragGesture(coordinateSpace: .named("canvas"))
                         .onChanged { v in
-                            if coinRadiusStart == nil { coinRadiusStart = model.coinRadius }
                             let dx = v.location.x - model.coinCenter.x
                             let dy = v.location.y - model.coinCenter.y
                             model.coinRadius = max(14, sqrt(dx * dx + dy * dy))
                         }
-                        .onEnded { _ in coinRadiusStart = nil }
                 )
         }
     }
@@ -106,15 +104,13 @@ struct MeasureView: View {
             handle(color: Theme.item)
                 .position(x: r.maxX, y: r.maxY)
                 .gesture(
-                    DragGesture()
+                    DragGesture(coordinateSpace: .named("canvas"))
                         .onChanged { v in
-                            if itemRectStart == nil { itemRectStart = model.itemRect }
-                            let s = itemRectStart!
+                            let s = model.itemRect
                             let w = max(24, v.location.x - s.minX)
                             let h = max(24, v.location.y - s.minY)
                             model.itemRect = CGRect(x: s.minX, y: s.minY, width: w, height: h)
                         }
-                        .onEnded { _ in itemRectStart = nil }
                 )
         }
     }
